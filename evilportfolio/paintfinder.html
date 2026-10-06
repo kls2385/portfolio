@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lowe’s PaintFinder — Kiera Szuba</title>
+  <meta name="description" content="A paint visualization kiosk that allows Lowe’s shoppers to plan paint projects in minutes.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="page-case-study">
+  <div class="page">
+    <main class="main">
+
+      <header class="header" id="top">
+        <nav class="nav" aria-label="Primary">
+          <a class="logo" href="index.html" aria-label="Kiera Szuba home page">
+            <span class="logo__mark" aria-hidden="true"></span>
+            <span class="logo__name">Kiera Szuba</span>
+          </a>
+          <div class="nav__buttons">
+            <a class="btn" href="index.html#works">Works</a>
+            <a class="btn" href="index.html#about">About Me</a>
+            <a class="btn btn--dark" href="#contact">Say Hi!</a>
+          </div>
+        </nav>
+
+        <div class="cs-hero">
+          <h1 class="cs-title">Lowe’s PaintFinder</h1>
+          <p class="cs-subtitle">A paint visualization kiosk that allows Lowe’s shoppers to plan paint projects in minutes.</p>
+        </div>
+
+        <div class="cs-hero-media">
+          <img src="assets/heroImg.png" alt="Lowe’s PaintFinder interactive kiosk interface showing paint palette visualization and color selection options">
+        </div>
+      </header>
+
+      <div class="body">
+        
+        <!-- Section 1: Overview & Context -->
+        <section class="cs-grid">
+          <div class="cs-column cs-text-block">
+            <h2 class="cs-heading">Imagine you need to paint your living room.</h2>
+            <div class="cs-copy">
+              <p>Do you know what colors you want your walls to be? How will they look when the sun hits them? How will your couch and table pair with it? How many buckets will you even need to shove into your car?</p>
+              <p><strong>PaintFinder gives you these answers before you even grab the buckets.</strong></p>
+            </div>
+
+            <div class="cs-subsection">
+              <h3 class="cs-subheading">What’s PaintFinder?</h3>
+              <p class="cs-copy-text">PaintFinder envisions an interactive kiosk within the paint department of Lowe’s stores for shoppers to map out exactly what paints to order for their projects. With the clean, welcoming layout of Lowe’s stores, as well as their emphasis on home decor and supplies for interior and exterior projects, a paint visualization kiosk is crucial for alleviating the guesswork and anxiety that comes with buying paint.</p>
+            </div>
+          </div>
+
+          <figure class="cs-column cs-media-block">
+            <img class="cs-media-img" src="assets/introMockup.png" alt="Rendering mockup of the Lowe’s PaintFinder kiosk at the endcap of the store paint swatches section">
+            <figcaption class="cs-caption">A rendering mockup of the kiosk at the endcap of the paint swatches.</figcaption>
+          </figure>
+        </section>
+
+        <!-- Section 2: Core Value Props -->
+        <section class="cs-features">
+          <h2 class="section-title">How does PaintFinder help?</h2>
+          
+          <div class="cs-feature-cards">
+            <article class="cs-card">
+              <h3 class="cs-card__title">Take your time</h3>
+              <p class="cs-card__desc">PaintFinder gives shoppers an intimate, self-paced environment next to the paint aisle, allowing them to easily pivot from checking out color swatches to testing them out on the kiosk.</p>
+            </article>
+
+            <article class="cs-card">
+              <h3 class="cs-card__title">Make it your own</h3>
+              <p class="cs-card__desc">MyLowe’s Rewards shoppers can upload their own photos to be visualized, which ensures that they order paints that they know perfectly fit the vibe of their project.</p>
+            </article>
+
+            <article class="cs-card">
+              <h3 class="cs-card__title">No more guesswork</h3>
+              <p class="cs-card__desc">PaintFinder provides plenty of ways for shoppers to solidify what they need to order, from the photo visualization itself, to the Plan Your Project mode that measures how much paint shoppers will need.</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 3: Anatomy of PaintFinder -->
+        <section class="cs-anatomy" id="anatomy">
+          <div class="cs-anatomy__header">
+            <h2 class="section-title">Anatomy of PaintFinder</h2>
+            <p class="cs-anatomy__intro">The physical design of PaintFinder helps not just Lowe’s shoppers, but anyone who frequents the store on a regular basis.</p>
+            <p class="cs-anatomy__instruction">Click on the hotspots on the kiosk renders to learn more!</p>
+          </div>
+
+          <div class="cs-anatomy__content">
+            <div class="cs-anatomy__views">
+              <div class="cs-anatomy__view">
+                <img src="assets/vizSide.png" alt="Lowe's PaintFinder kiosk side view rendering">
+                <button type="button" class="cs-hotspot is-active" aria-label="Sturdy kiosk barrier" data-hotspot="1" style="top: 32%; left: 12%;">
+                  <span class="cs-hotspot__dot"></span>
+                </button>
+                <button type="button" class="cs-hotspot" aria-label="Large adjustable touchscreen" data-hotspot="2" style="top: 25%; left: 81%;">
+                  <span class="cs-hotspot__dot"></span>
+                </button>
+              </div>
+
+              <div class="cs-anatomy__view">
+                <img src="assets/vizFront.png" alt="Lowe's PaintFinder kiosk front view rendering">
+                <button type="button" class="cs-hotspot" aria-label="Movable chair" data-hotspot="3" style="top: 50%; left: 36%;">
+                  <span class="cs-hotspot__dot"></span>
+                </button>
+                <button type="button" class="cs-hotspot" aria-label="Receipt printer" data-hotspot="4" style="top: 36%; left: 88%;">
+                  <span class="cs-hotspot__dot"></span>
+                </button>
+              </div>
+            </div>
+
+            <div class="cs-anatomy__card-wrapper">
+              <article class="cs-anatomy__card" id="hotspotCard" aria-live="polite">
+                <h3 class="cs-anatomy__card-title" id="hotspotTitle">Sturdy kiosk barrier</h3>
+                <p class="cs-anatomy__card-desc" id="hotspotDesc">A barrier to the left of the kiosk establishes a clearer walkway for both passing-by customers as well as machinery. It also makes it easier to align multiple kiosks together for especially large or busy stores.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <footer class="footer" id="contact">
+      <div class="footer__content">
+        <div class="footer__tagline">
+          <p class="footer__kicker">Like what you’re seeing?</p>
+          <p class="footer__title">Let’s make some more.</p>
+        </div>
+        <div class="footer__nav">
+          <a class="btn" href="#" data-link="resume">Resume</a>
+          <a class="btn" href="#" data-link="linkedin">LinkedIn</a>
+          <a class="btn" href="#" data-link="email">Email</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
