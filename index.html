@@ -1,48 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Kiera Szuba — UX/UI Designer</title>
-  <meta name="description" content="Kiera Szuba designs apps, websites, and design systems that balance clarity with delight.">
+  <meta name="description"
+    content="Kiera Szuba designs apps, websites, and design systems that balance clarity with delight.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+
+<body data-pattern="yellow">
+  <div class="bg-pattern" aria-hidden="true">
+    <div class="bg-pattern__strip" style="--i: 0"></div>
+    <div class="bg-pattern__strip" style="--i: 1"></div>
+    <div class="bg-pattern__strip" style="--i: 2"></div>
+    <div class="bg-pattern__strip" style="--i: 3"></div>
+    <div class="bg-pattern__strip" style="--i: 4"></div>
+    <div class="bg-pattern__strip" style="--i: 5"></div>
+    <div class="bg-pattern__strip" style="--i: 6"></div>
+    <div class="bg-pattern__strip" style="--i: 7"></div>
+    <div class="bg-pattern__strip" style="--i: 8"></div>
+    <div class="bg-pattern__strip" style="--i: 9"></div>
+  </div>
   <div class="page">
+    <nav class="nav" aria-label="Primary">
+      <a class="logo" href="#top" aria-label="Kiera Szuba, home">
+        <span class="logo__mark" aria-hidden="true"><img src="assets/siteAssets/logoV1.svg" alt="Kiera Szuba Logo"></span>
+      </a>
+      <div class="nav__buttons">
+        <a class="btn" href="#works">Works</a>
+        <a class="btn" href="#about">About Me</a>
+        <a class="btn btn--dark" href="#contact">Say Hi!</a>
+      </div>
+    </nav>
     <main class="main">
 
-      <header class="header" id="top">
-        <nav class="nav" aria-label="Primary">
-          <a class="logo" href="#top" aria-label="Kiera Szuba, home">
-            <span class="logo__mark" aria-hidden="true"></span>
-            <span class="logo__name">Kiera Szuba</span>
-          </a>
-          <div class="nav__buttons">
-            <a class="btn" href="#works">Works</a>
-            <a class="btn" href="#about">About Me</a>
-            <a class="btn btn--dark" href="#contact">Say Hi!</a>
-          </div>
-        </nav>
 
+      <header class="header" id="top">
         <div class="intro">
           <div class="intro__text">
-            <h1 class="hero">I make designs that listen to <u>you</u> first.</h1>
-            <p class="subtitle">I believe that good design balances clarity with delight. I create apps, websites, and design systems that meet people’s needs, and bring them joy along the way.</p>
+            <span class="logo__name">Kiera Szuba - UX/UI Designer</span>
+            <h1 class="hero">I make designs that <u>listen to</u> you first.</h1>
+            <p class="subtitle">I believe that good design balances clarity with delight. I create apps, websites, and
+              design systems that meet people’s needs, and bring them joy along the way.</p>
           </div>
 
-          <div class="wheel" role="group" aria-label="Pick an accent color for the site">
+          <div class="wheel">
             <div class="wheel__ring">
-              <button class="wheel__dot wheel__dot--r" type="button" data-color="#d33333" aria-label="Red" aria-pressed="false"></button>
-              <button class="wheel__dot wheel__dot--o" type="button" data-color="#ff9137" aria-label="Orange" aria-pressed="false"></button>
-              <button class="wheel__dot wheel__dot--y" type="button" data-color="#ffd900" aria-label="Yellow" aria-pressed="true"></button>
-              <button class="wheel__dot wheel__dot--g" type="button" data-color="#6dd03b" aria-label="Green" aria-pressed="false"></button>
-              <button class="wheel__dot wheel__dot--b" type="button" data-color="#4183e7" aria-label="Blue" aria-pressed="false"></button>
-              <button class="wheel__dot wheel__dot--v" type="button" data-color="#902dd2" aria-label="Purple" aria-pressed="false"></button>
+              <svg class="wheel__svg" viewBox="0 0 500 500" aria-label="Interactive color wheel">
+                <defs>
+                  <filter id="inner-shadow">
+                    <!-- 1. Create the inner shadow shape -->
+                    <feMorphology operator="erode" radius="3" in="SourceAlpha" result="eroded" />
+                    <feOffset dx="3" dy="3" in="eroded" result="offsetEroded" />
+                    <feComposite operator="out" in="SourceAlpha" in2="offsetEroded" result="edge" />
+
+                    <!-- 2. Fill the inner shadow edge with solid white -->
+                    <feFlood flood-color="#ffffff" result="white" />
+                    <feComposite operator="in" in="white" in2="edge" result="whiteEdge" />
+
+                    <!-- 3. TRIM STROKE: Erode SourceAlpha by half the stroke width (2px-3px) -->
+                    <!-- This creates a boundary mask strictly inside the black stroke -->
+                    <feMorphology operator="erode" radius="3" in="SourceAlpha" result="innerBounds" />
+                    <feComposite operator="in" in="whiteEdge" in2="innerBounds" result="cleanWhiteEdge" />
+
+                    <!-- 4. Composite the trimmed shadow over the sector graphic -->
+                    <feComposite operator="over" in="cleanWhiteEdge" in2="SourceGraphic" />
+                  </filter>
+                </defs>
+
+                <!-- Sector paths carry both fill & stroke directly. NO separate overlay paths exist. -->
+                <path class="wheel__sector" fill="var(--red)" data-color="red"
+                  data-image="assets/siteAssets/patches.png" tabindex="0" role="button" aria-pressed="false"
+                  aria-label="Red sector" alt="Patches, a red cat with a white belly and red-pronged antennae"
+                  d="M 250.0 20.0 A 230 230 0 0 1 449.19 135.0 L 349.59 192.5 A 115 115 0 0 0 250.0 135.0 Z" />
+
+                <path class="wheel__sector" fill="var(--orange)" data-color="orange"
+                  data-image="assets/siteAssets/trevor.png" tabindex="0" role="button" aria-pressed="false"
+                  aria-label="Orange sector" alt="Trevor, an orange tabby cat playing in chimney soot"
+                  d="M 449.19 135.0 A 230 230 0 0 1 449.19 365.0 L 349.59 307.5 A 115 115 0 0 0 349.59 192.5 Z" />
+
+                <path class="wheel__sector" fill="var(--yellow)" data-color="yellow"
+                  data-image="assets/siteAssets/marshmallow.png" tabindex="0" role="button" aria-pressed="true"
+                  aria-label="Yellow sector" alt="Marshmallow, a cream cat with a yellow back and a blue flower tail"
+                  d="M 449.19 365.0 A 230 230 0 0 1 250.0 480.0 L 250.0 365.0 A 115 115 0 0 0 349.59 307.5 Z" />
+
+                <path class="wheel__sector" fill="var(--green)" data-color="green"
+                  data-image="assets/siteAssets/goobus.png" tabindex="0" role="button" aria-pressed="false"
+                  aria-label="Green sector" alt="Goobus, a green alien cat with lighter antennae and a bulbed tail"
+                  d="M 250.0 480.0 A 230 230 0 0 1 50.81 365.0 L 150.41 307.5 A 115 115 0 0 0 250.0 365.0 Z" />
+
+                <path class="wheel__sector" fill="var(--blue)" data-color="blue"
+                  data-image="assets/siteAssets/steven.png" tabindex="0" role="button" aria-pressed="false"
+                  aria-label="Blue sector"
+                  d="M 50.81 365.0 A 230 230 0 0 1 50.81 135.0 L 150.41 192.5 A 115 115 0 0 0 150.41 307.5 Z" />
+
+                <path class="wheel__sector" fill="var(--purple)" data-color="purple"
+                  data-image="assets/siteAssets/serotonincat.png" tabindex="0" role="button" aria-pressed="false"
+                  aria-label="Purple sector"
+                  alt="Serotonincat, a purple cat with a lighter face and a darker misty tail"
+                  d="M 50.81 135.0 A 230 230 0 0 1 250.0 20.0 L 250.0 135.0 A 115 115 0 0 0 150.41 192.5 Z" />
+              </svg>
             </div>
-            <img class="wheel__shadow" src="assets/wheel-shadow.svg" alt="" aria-hidden="true">
+
+            <div class="wheel__center">
+              <div class="wheel__center-box">
+                <img class="wheel__center-img" id="wheelCenterImg" src="assets/siteAssets/marshmallow.png"
+                  alt="Marshmallow, a cream cat with a yellow back and a blue flower tail" />
+              </div>
+            </div>
+
+            <svg class="wheel__shadow" viewBox="0 0 400 30" fill="none">
+              <ellipse cx="200" cy="15" rx="180" ry="12" fill="rgba(0,0,0,0.12)" />
+            </svg>
           </div>
         </div>
       </header>
@@ -58,13 +132,15 @@
               </div>
               <div class="card__text">
                 <h3 class="card__title"><a class="card__link" href="paintfinder.html">Lowe’s PaintFinder</a></h3>
-                <p class="card__desc">A paint visualization kiosk that allows Lowe’s shoppers to plan paint projects in minutes.</p>
+                <p class="card__desc">A paint visualization kiosk that allows Lowe’s shoppers to plan paint projects in
+                  minutes.</p>
               </div>
             </article>
 
             <article class="card" data-reveal>
               <div class="card__media">
-                <img class="card__img" src="assets/tuck.png" alt="Tuck, your smart reading buddy, with illustrated book characters">
+                <img class="card__img" src="assets/tuck.png"
+                  alt="Tuck, your smart reading buddy, with illustrated book characters">
               </div>
               <div class="card__text">
                 <h3 class="card__title"><a class="card__link" href="#">Tuck: Your Smart Reading Buddy</a></h3>
@@ -78,7 +154,8 @@
               </div>
               <div class="card__text">
                 <h3 class="card__title"><a class="card__link" href="#">NYID Digital Wallet</a></h3>
-                <p class="card__desc">An app for New Yorkers to house their driver’s license and all other important identifiers in one place.</p>
+                <p class="card__desc">An app for New Yorkers to house their driver’s license and all other important
+                  identifiers in one place.</p>
               </div>
             </article>
 
@@ -95,9 +172,14 @@
               <p class="about__lede">I’m Kiera Szuba, and I love it when useful things also look cool!</p>
             </div>
             <div class="about__copy">
-              <p>I found my love of interactive design growing up in Buffalo, NY, always being drawn to the art and movement that brings life to my home. I’ve called the arts my home since the beginning, but my desire to channel my artistic craft into helping real people led me to the wonderful world of UX/UI design.</p>
-              <p>My BFA in New Media Design at Rochester Institute of Technology taught me how to value the users of my designs above all else. There, I found my love for thoroughly researching into my users’ needs, and crafting thoughtful designs that both help and delight them.</p>
-              <p>When I’m not hard at work making unforgettable user experiences, I keep my brain at work in other ways, such as doodling in my sketchbook or going down rabbit holes for worldbuilding!</p>
+              <p>I found my love of interactive design growing up in Buffalo, NY, always being drawn to the art and
+                movement that brings life to my home. I’ve called the arts my home since the beginning, but my desire to
+                channel my artistic craft into helping real people led me to the wonderful world of UX/UI design.</p>
+              <p>My BFA in New Media Design at Rochester Institute of Technology taught me how to value the users of my
+                designs above all else. There, I found my love for thoroughly researching into my users’ needs, and
+                crafting thoughtful designs that both help and delight them.</p>
+              <p>When I’m not hard at work making unforgettable user experiences, I keep my brain at work in other ways,
+                such as doodling in my sketchbook or going down rabbit holes for worldbuilding!</p>
             </div>
             <div class="about__contact">
               <a class="btn" href="#" data-link="linkedin">LinkedIn</a>
@@ -112,12 +194,20 @@
       <div class="footer__content">
         <div class="footer__tagline">
           <p class="footer__kicker">Like what you’re seeing?</p>
-          <p class="footer__title">Let’s make some more.</p>
+          <h2 class="footer__title">Let’s make <u>some more</u>.</h2>
         </div>
         <div class="footer__nav">
+          <a class="btn btn--dark" href="#" data-link="email">Email me!</a>
           <a class="btn" href="#" data-link="resume">Resume</a>
           <a class="btn" href="#" data-link="linkedin">LinkedIn</a>
-          <a class="btn" href="#" data-link="email">Email</a>
+        </div>
+        <hr>
+        <div class="footer__meta">
+          <div class="footer__brand">
+            <img src="assets/siteAssets/logoV1.svg" alt="Kiera Szuba Logo">
+            <span class="footer__copyright">© 2026 Kiera Szuba</span>
+          </div>
+          <button class="back-to-top" id="backToTopBtn" type="button">Back to top ↑</button>
         </div>
       </div>
     </footer>
@@ -125,4 +215,5 @@
 
   <script src="script.js"></script>
 </body>
+
 </html>
