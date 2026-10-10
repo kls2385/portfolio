@@ -2,6 +2,8 @@
 :root {
   --white: #fffef8;
   --black: #111111;
+  --gray: #aaaaaa;
+  --lightGray: #cccccc;
   --tan: #efeae0;
 
   --purple: #902dd2;
@@ -21,6 +23,8 @@
   --content: 1720px;
   --radius-btn: 12px;
   --radius-card: 32px;
+
+  --pattern-scale: 1;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -49,8 +53,147 @@ a { color: inherit; text-decoration: none; }
   flex-direction: column;
   align-items: center;
   gap: 160px;
-  padding-top: 80px;
-  background: var(--white);
+  position: relative;
+  z-index: 1;
+  /* Removed: background: var(--white); */
+}
+
+/* ---------- Repeating Vector Background Patterns ---------- */
+.bg-pattern {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0; /* Placed above body's white background, but behind .page */
+  opacity: 0.12;
+  display: flex; /* <--- ADD THIS */
+  flex-direction: column; /* <--- ADD THIS */
+  background-repeat: repeat;
+  transition: background-image 0.3s ease;
+}
+
+.bg-pattern__strip {
+  flex: 1;
+  width: 100%;
+  background-image: var(--pattern-img);
+  background-size: calc(var(--pattern-base-size) * var(--pattern-scale)) calc(var(--pattern-base-size) * var(--pattern-scale));
+  background-repeat: repeat;
+  background-attachment: fixed;
+  opacity: var(--pattern-opacity, 1); /* Uses the pattern's custom opacity immediately */
+  transition: opacity 0.25s ease;
+}
+
+/* Staggered Exit (Top to Bottom) */
+.bg-pattern.is-exiting .bg-pattern__strip {
+  opacity: 0;
+  transition-delay: calc(var(--i) * 32ms);
+}
+
+/* Staggered Entrance (Top to Bottom) */
+.bg-pattern.is-entering .bg-pattern__strip {
+  clip-path: inset(0 0 100% 0); /* Clipped out before reveal */
+  animation: patternStripEnter 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(var(--i) * 32ms);
+}
+
+/* Curtain wipe reveal without touching element opacity */
+@keyframes patternStripEnter {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* Pattern SVG definitions */
+/* Pattern SVG definitions with base sizes */
+body[data-pattern="red"] {
+  --pattern-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='8' fill='%23d33333'/%3E%3C/svg%3E");
+  --pattern-base-size: 48px;
+  --pattern-opacity: 0.5;
+}
+
+body[data-pattern="orange"] {
+  --pattern-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect y='18' width='48' height='12' fill='%23ff9137'/%3E%3C/svg%3E");
+  --pattern-base-size: 48px;
+  --pattern-opacity: 1;
+}
+
+body[data-pattern="yellow"] {
+  --pattern-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg fill='%23ffd900'%3E%3Ccircle cx='28' cy='28' r='6'/%3E%3Ccircle cx='28' cy='17' r='6'/%3E%3Ccircle cx='28' cy='39' r='6'/%3E%3Ccircle cx='17' cy='28' r='6'/%3E%3Ccircle cx='39' cy='28' r='6'/%3E%3C/g%3E%3C/svg%3E");
+  --pattern-base-size: 56px;
+  --pattern-opacity: 1;
+}
+
+body[data-pattern="green"] {
+  --pattern-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='52' viewBox='0 0 52 52'%3E%3Cpolygon points='26,8 30.5,19 40,20.5 33,27.5 35,37 26,32 17,37 19,27.5 12,20.5 21.5,19' fill='%236dd03b'/%3E%3C/svg%3E");
+  --pattern-base-size: 52px;
+  --pattern-opacity: 1;
+}
+
+body[data-pattern="blue"] {
+  --pattern-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect x='18' width='12' height='48' fill='%234183e7'/%3E%3C/svg%3E");
+  --pattern-base-size: 48px;
+  --pattern-opacity: 0.5;
+}
+
+body[data-pattern="purple"] {
+  --pattern-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath fill='%23902dd2' d='M14 38a8 8 0 0 1-1-16 10 10 0 0 1 18-3 8 8 0 0 1 13 7 7 7 0 0 1-1 12Z'/%3E%3C/svg%3E");
+  --pattern-base-size: 60px;
+  --pattern-opacity: 0.5;
+}
+
+/* ---------- Pattern Keyframe Animations ---------- */
+
+/* Pulse / Scale up and down for Red, Yellow, Green, & Purple */
+@keyframes patternPulse {
+  0%, 100% {
+    background-size: calc(var(--pattern-base-size) * var(--pattern-scale)) calc(var(--pattern-base-size) * var(--pattern-scale));
+  }
+  50% {
+    background-size: calc(var(--pattern-base-size) * var(--pattern-scale) * 1.15) calc(var(--pattern-base-size) * var(--pattern-scale) * 1.15);
+  }
+}
+
+/* Downward vertical tile motion for Orange */
+@keyframes patternMoveDown {
+  from {
+    background-position-y: 0px;
+  }
+  to {
+    background-position-y: calc(var(--pattern-base-size) * var(--pattern-scale));
+  }
+}
+
+/* Rightward horizontal tile motion for Blue */
+@keyframes patternMoveRight {
+  from {
+    background-position-x: 0px;
+  }
+  to {
+    background-position-x: calc(var(--pattern-base-size) * var(--pattern-scale));
+  }
+}
+
+/* ---------- Pattern Animation Application ---------- */
+
+/* Red, Yellow, Green, & Purple: Staggered scaling across strips */
+body[data-pattern="yellow"] .bg-pattern__strip,
+body[data-pattern="green"] .bg-pattern__strip,
+body[data-pattern="orange"] .bg-pattern__strip {
+  animation: patternMoveDown 10s linear infinite;
+}
+
+/* Blue: Slow rightward continuous loop */
+body[data-pattern="red"] .bg-pattern__strip, body[data-pattern="blue"] .bg-pattern__strip, body[data-pattern="purple"] .bg-pattern__strip {
+  animation: patternMoveRight 10s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-pattern__strip {
+    transition: none !important;
+    animation: none !important;
+  }
 }
 
 .main {
@@ -85,6 +228,7 @@ a { color: inherit; text-decoration: none; }
   color: var(--white);
   border-color: var(--white);
   box-shadow: 0 8px 0 var(--black);
+  font-weight: bold;
 }
 .btn--dark:hover  { transform: translateY(4px); box-shadow: 0 4px 0 var(--black); }
 .btn--dark:active { transform: translateY(8px); box-shadow: 0 0 0 var(--black); }
@@ -95,10 +239,21 @@ a { color: inherit; text-decoration: none; }
   font-size: 20px;
 }
 
-.btn:focus-visible, .logo:focus-visible, .card__link:focus-visible, .wheel__dot:focus-visible {
+.btn:focus-visible, .logo:focus-visible, .card__link:focus-visible, .wheel__sector:focus-visible {
   outline: 2px solid var(--black);
   outline-offset: 4px;
 }
+
+/* ---------- Card Project Title Underline on Hover ---------- */
+/* Completely strip browser default black underlines from link elements */
+.card__link,
+.card__link:hover,
+.card__link:focus,
+.card__link * {
+  text-decoration: none;
+}
+
+
 
 /* ---------- Header ---------- */
 .header {
@@ -109,20 +264,27 @@ a { color: inherit; text-decoration: none; }
 }
 
 .nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  height: 70px;
+  width: 100%;
+  min-height: 90px;
+  padding: 20px 80px;
+  background: var(--white);
+  border-bottom: 2px solid var(--lightGray);
+  box-shadow: none;
 }
 
 .logo { display: flex; align-items: center; gap: 12px; }
 .logo__mark {
-  width: 24px;
-  height: 24px;
-  border: 1px solid var(--black);
+  width: 52px;
+  height: 52px;
   border-radius: 100px;
 }
-.logo__name { font-size: 20px; line-height: 1.5; white-space: nowrap; }
+.logo__name { font-size: 20px; margin-bottom: -32px; white-space: nowrap; }
 
 .nav__buttons { display: flex; align-items: center; gap: 32px; height: 70px; }
 
@@ -131,7 +293,8 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
   justify-content: space-between;
   gap: 48px;
-  padding-right: 70px;
+  margin-right: -24px;
+  margin-top: -72px;
 }
 
 .intro__text {
@@ -139,114 +302,187 @@ a { color: inherit; text-decoration: none; }
   flex-direction: column;
   gap: 52px;
   min-width: 0;
+  background: var(--white);
+  padding: 32px;
+  border-radius: var(--radius-card);
 }
 
 .hero {
   max-width: 1009px;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(56px, 7.2vw, 78px);
+  font-size: clamp(56px, 7.2vw, 68px);
   line-height: 1.15;
 }
 .hero u, .cs-title u, .footer__title u { text-underline-position: from-font; }
 
+/* ---------- Hero Tagline Accent Underline ---------- */
+.hero u {
+  text-decoration: 3px underline var(--accent);
+  text-underline-offset: 6px;
+  text-underline-position: from-font;
+  transition: text-decoration-color 0.2s ease;
+}
+
 .subtitle {
   max-width: 600px;
-  font-size: 32px;
+  font-size: 24px;
   line-height: 1.4;
 }
 
-/* ---------- Color wheel ---------- */
+/* ---------- Color wheel (Frame 51 Donut SVG) ---------- */
 .wheel {
-  --s: 1;
-  --spin: 60s;
   position: relative;
   flex: none;
-  width: calc(493px * var(--s));
-  height: calc(630px * var(--s));
+  width: 540px;
+  height: 540px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Continuous slow clockwise spin */
+@keyframes spinClockwise {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .wheel__ring {
   position: absolute;
-  left: calc(247px * var(--s));
-  top: calc(270px * var(--s));
-  width: 0;
-  height: 0;
-  animation: wheel-spin var(--spin) linear infinite;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* Adjust duration (e.g., 30s) to speed up or slow down the spin */
+  animation: spinClockwise 30s linear infinite;
+}
+.wheel__svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none; /* Ignore container box; only allow child elements with pointer-events to respond */
 }
 
-.wheel__dot {
-  --dx: 0;
-  --dy: 0;
-  --dot: var(--red);
-  position: absolute;
-  left: calc((var(--dx) - 60) * var(--s) * 1px);
-  top: calc((var(--dy) - 60) * var(--s) * 1px);
-  width: calc(120px * var(--s));
-  height: calc(120px * var(--s));
-  padding: 0;
-  border: 2px solid var(--black);
-  border-radius: 50%;
-  background: var(--dot);
-  box-shadow: inset 4px 4px 0 #fff, 0 4px 0 var(--black);
+.wheel__sector {
   cursor: pointer;
-  transition: transform .12s ease, box-shadow .12s ease;
-  animation: wheel-unspin var(--spin) linear infinite;
-}
-.wheel__dot:hover  { transform: translateY(2px); box-shadow: inset 4px 4px 0 #fff, 0 2px 0 var(--black); }
-.wheel__dot:active { transform: translateY(4px); box-shadow: inset 4px 4px 0 #fff, 0 0 0 var(--black); }
+  stroke: var(--black);
+  stroke-width: 8px;
+  stroke-linejoin: round;
+  transform-box: view-box;
+  transform-origin: 250px 250px;
+  paint-order: stroke fill;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease;
+  outline: none;
 
-.wheel__dot[aria-pressed="true"],
-.wheel__dot[aria-pressed="true"]:hover,
-.wheel__dot[aria-pressed="true"]:active {
-  transform: translateY(4px);
-  box-shadow: inset 6px 6px 0 rgba(17, 17, 17, .28), 0 0 0 var(--black);
+  /* Restrict hover & click targets strictly to the rendered fill and stroke vector shape */
+  pointer-events: visiblePainted;
+
+  /* Apply sharp white inner shadow */
+  filter: url(#inner-shadow);
 }
 
-.wheel__dot::after {
-  content: "";
-  position: absolute;
-  inset: calc(-14px * var(--s));
-  border: 2px dashed var(--black);
-  border-radius: 50%;
-  opacity: 0;
-  scale: .6;
-  transition: opacity .2s ease, scale .4s cubic-bezier(.34, 1.56, .64, 1);
-  animation: dot-orbit 12s linear infinite;
+.wheel__sector-outline {
+  fill: none;
+  stroke: var(--black);
+  stroke-width: 8.5px;
   pointer-events: none;
+  z-index: 100;
 }
-.wheel__dot[aria-pressed="true"]::after { opacity: 1; scale: 1; }
 
-.wheel__ripple {
+/* Hide separate standalone overlay outline paths to prevent idle strokes staying behind */
+.wheel__svg > .wheel__sector-outline,
+.wheel__svg > g > .wheel__sector-outline:not(.wheel__sector .wheel__sector-outline) {
+  display: none;
+}
+
+.wheel__sector:hover {
+  filter: brightness(1.1);
+  transform: scale(1.05);
+  
+    /* Apply sharp white inner shadow */
+  filter: url(#inner-shadow);
+}
+
+.wheel__sector[aria-pressed="true"] {
+  filter: brightness(1.15) drop-shadow(0 0 6px rgba(0, 0, 0, 0.3));
+  transform: scale(1.08);
+
+    /* Apply sharp white inner shadow */
+  filter: url(#inner-shadow);
+}
+
+.wheel__center {
   position: absolute;
-  inset: -2px;
-  border: 3px solid var(--black);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 340px;
+  height: 340px;
   border-radius: 50%;
-  pointer-events: none;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto; /* Block mouse events from hitting hidden sectors underneath */
+  background: var(--white);
+  border: 4px solid var(--black);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 2;
 }
 
-.wheel:has(.wheel__dot:hover, .wheel__dot:focus-visible) :is(.wheel__ring, .wheel__dot) {
-  animation-play-state: paused;
+.wheel__center-box {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
 }
 
-.wheel__dot--r { --dx: 0;      --dy: -209.5;  --dot: var(--red); }
-.wheel__dot--o { --dx: 181.4;  --dy: -104.75; --dot: var(--orange); }
-.wheel__dot--y { --dx: 181.4;  --dy: 104.75;  --dot: var(--yellow); }
-.wheel__dot--g { --dx: 0;      --dy: 209.5;   --dot: var(--green); }
-.wheel__dot--b { --dx: -181.4; --dy: 104.75;  --dot: var(--blue); }
-.wheel__dot--v { --dx: -181.4; --dy: -104.75; --dot: var(--purple); }
+/* Idle head-bobbing animation for Freaklet */
+@keyframes freakletBob {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-7px) rotate(-6deg);
+  }
+  50% {
+    transform: translateY(-2px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-7px) rotate(6deg);
+  }
+}
 
-@keyframes wheel-spin   { from { rotate: 0deg; } to { rotate: 360deg; } }
-@keyframes wheel-unspin { from { rotate: 0deg; } to { rotate: -360deg; } }
-@keyframes dot-orbit    { to { rotate: 360deg; } }
+.wheel__center-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 48px;
+  /* Pivot near the base/feet so the head sways naturally */
+  transform-origin: 50% 85%;
+  animation: freakletBob 2.8s ease-in-out infinite;
+  transition: opacity 0.25s ease;
+}
 
 .wheel__shadow {
   position: absolute;
-  left: calc(9px * var(--s));
-  top: calc(597px * var(--s));
-  width: calc(476px * var(--s));
-  height: calc(33px * var(--s));
+  bottom: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  height: auto;
   pointer-events: none;
+  z-index: -1;
+}
+
+/* Arc Ripple Burst Styling */
+.wheel__ripple-sector {
+  pointer-events: none;
+  transform-origin: 250px 250px;
+  transform-box: view-box;
 }
 
 /* ---------- Body ---------- */
@@ -287,6 +523,11 @@ a { color: inherit; text-decoration: none; }
 }
 .card:hover { transform: translateY(-4px); }
 
+.card:hover .card__title {
+  background-size: 100% 3px;
+  opacity: 1;
+}
+
 .card__media {
   position: relative;
   height: 300px;
@@ -312,17 +553,32 @@ a { color: inherit; text-decoration: none; }
   width: min(504px, 100%);
   padding: 12px;
 }
+
 .card__title {
+  width: fit-content;      /* Fits element box precisely to text length */
+  align-self: flex-start;  /* Stops Flexbox from stretching title to 100% card width */
   font-family: var(--font-display);
   font-weight: 600;
   font-size: 24px;
   line-height: 1.15;
+
+  /* Accent underline via background gradient (safari-safe) */
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 3px; /* Hidden by default */
+  transition: background-size 0.25s ease;
 }
+
 .card__link::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
 .card__desc { font-size: 20px; line-height: 1.5; }
 
+.card__link {
+  text-decoration: none;
+}
+
 /* About */
-.about { display: flex; align-items: flex-start; gap: 80px; }
+.about { display: flex; align-items: flex-start; gap: 0px; }
 
 .about__photo {
   position: relative;
@@ -334,19 +590,23 @@ a { color: inherit; text-decoration: none; }
   overflow: clip;
 }
 .about__photo img {
+  width: 100%;
   height: 100%;
   object-fit: contain;
 }
 
 .about__text {
   position: sticky;
-  top: 0;
+  top: 40px;
   display: flex;
   flex-direction: column;
   gap: 40px;
-  padding: 100px 0 40px;
+  padding: 48px;
   width: min(655px, 100%);
+  background: var(--white);
+  border-radius: var(--radius-card);
 }
+
 .about__heading { display: flex; flex-direction: column; gap: 20px; }
 .about__lede {
   font-family: var(--font-display);
@@ -369,7 +629,7 @@ a { color: inherit; text-decoration: none; }
 .cs-title {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(48px, 6vw, 72px);
+  font-size: clamp(56px, 7.2vw, 72px);
   line-height: 1.1;
 }
 
@@ -476,7 +736,7 @@ a { color: inherit; text-decoration: none; }
   padding: 36px 30px;
   background: #fff;
   border: solid var(--black);
-  border-width: 1px 2px 8px 2px;
+  border-width: 2px;
   border-radius: var(--radius-card);
   display: flex;
   flex-direction: column;
@@ -628,20 +888,80 @@ a { color: inherit; text-decoration: none; }
 /* ---------- Footer ---------- */
 .footer {
   width: 100%;
-  padding: 94px 100px;
-  border-top: 4px solid var(--black);
-  overflow: clip;
+  padding: 80px 0 60px;
+  background: var(--white);
+  border-top: 2px solid var(--black);
+  border-radius: 0;
 }
-.footer__content { display: flex; flex-direction: column; gap: 60px; }
-.footer__tagline { display: flex; flex-direction: column; gap: 24px; }
-.footer__kicker { font-weight: 800; font-size: 32px; line-height: 1.4; }
+
+.footer__content {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  width: min(var(--content), 100% - 200px);
+  margin: 0 auto;
+}
+
+.footer__tagline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.footer__kicker {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1.2;
+}
+
 .footer__title {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 80px;
+  font-size: clamp(56px, 7.2vw, 72px);
   line-height: 1.15;
 }
-.footer__nav { display: flex; align-items: center; gap: 32px; padding-bottom: 4px; }
+
+.footer__title u {
+  text-decoration: 3px underline var(--accent);
+  text-underline-offset: 6px;
+  text-underline-position: from-font;
+  transition: text-decoration-color 0.2s ease;
+}
+
+.footer__nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.footer__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  color: var(--black);
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--lightGray);
+  margin: 0;
+}
+
+.footer__brand {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+
+}
+
+.footer img {
+  width: 48px;
+  display: block;
+  flex-shrink: 0;
+}
 
 .back-to-top {
   background: none;
@@ -652,9 +972,47 @@ a { color: inherit; text-decoration: none; }
   cursor: pointer;
   text-decoration: underline;
   color: var(--black);
-  padding: 4px 8px;
+  padding: 4px 0;
+  transition: opacity 0.2s ease;
 }
-.back-to-top:hover { opacity: 0.7; }
+
+.back-to-top:hover {
+  opacity: 0.7;
+}
+
+@media (max-width: 1100px) {
+  .footer__content {
+    width: calc(100% - 80px);
+  }
+}
+
+@media (max-width: 640px) {
+  .footer__content {
+    width: calc(100% - 40px);
+    gap: 36px;
+  }
+  .footer__meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .footer__content {
+    width: calc(100% - 80px);
+  }
+}
+
+@media (max-width: 640px) {
+  .footer__content {
+    width: calc(100% - 40px);
+  }
+  .back-to-top {
+    margin-left: 0;
+    width: 100%;
+  }
+}
 
 /* ---------- Scroll reveal ---------- */
 .js [data-reveal] {
@@ -667,27 +1025,41 @@ a { color: inherit; text-decoration: none; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .wheel__ring, .wheel__dot, .wheel__dot::after { animation: none; }
-  .wheel__dot::after { transition: none; }
+  .wheel__ring, .wheel__sector, .wheel__center-img { transition: none; animation: none; }
   .js [data-reveal] { opacity: 1; transform: none; transition: none; }
-  .btn, .card, .wheel__dot { transition: none; }
+  .btn, .card { transition: none; }
 }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 1512px) {
+@media (min-width: 1500px) {
   .intro { padding-right: 20px; gap: 32px; }
-  .wheel { --s: .8; }
+  /*.wheel { width: 400px; height: 400px; }*/
+  /*.wheel__center { width: 215px; height: 215px; }*/
   .subtitle { font-size: 24px; }
   .about { gap: 56px; }
   .about__photo { width: 50%; height: 900px; }
   .footer__card { padding: 48px 56px; }
+
+    :root {
+    --pattern-scale: 1.5; /* 50% larger pattern on standard desktops */
+  }
 }
 
 @media (max-width: 1100px) {
+
   .main, .footer { width: calc(100% - 80px); }
   .header { gap: 56px; }
   .intro { flex-direction: column; align-items: flex-start; gap: 56px; }
-  .wheel { --s: .6; align-self: center; }
+  .intro__text,
+  .about__text {
+    padding: 36px;
+  }
+  
+  .footer {
+    padding: 56px 40px;
+  }
+  .wheel { width: 340px; height: 340px; align-self: center; }
+  .wheel__center { width: 184px; height: 184px; }
   .cards { grid-template-columns: 1fr; }
   .about { flex-direction: column; }
   .about__photo { width: 100%; height: 640px; }
@@ -708,8 +1080,17 @@ a { color: inherit; text-decoration: none; }
   .nav { height: auto; flex-direction: column; gap: 20px; }
   .nav__buttons, .about__contact, .footer__nav { gap: 12px; flex-wrap: wrap; height: auto; }
   .subtitle { font-size: 22px; }
-  .wheel { --s: .5; }
+  .wheel { width: 280px; height: 280px; }
+  .wheel__center { width: 150px; height: 150px; }
   .body { gap: 80px; }
+  .intro__text,
+  .about__text {
+    padding: 24px;
+  }
+  
+  .footer {
+    padding: 36px 24px;
+  }
   .section-title { font-size: 36px; }
   .card { padding: 14px; }
   .card__media { height: 280px; }
