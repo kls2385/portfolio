@@ -28,7 +28,7 @@
     });
   }
 
-  // ---- Color wheel: pick a color and the site's accent becomes that color ----
+  // ---- Color wheel calculation & accent color switching ----
   const INK = "#111111";
   const PAPER = "#fffef8";
 
@@ -46,29 +46,86 @@
 
   const inkFor = (hex) => (contrast(hex, INK) >= contrast(hex, PAPER) ? INK : PAPER);
 
-  const setAccent = (hex) => {
-    root.style.setProperty("--accent", hex);
-    root.style.setProperty("--accent-ink", inkFor(hex));
+  // Map color names to their corresponding hex values (for contrast calculations)
+  const colorHexMap = {
+    red: "#d33333",
+    orange: "#ff9137",
+    yellow: "#ffd900",
+    green: "#6dd03b",
+    blue: "#4183e7",
+    purple: "#902dd2"
   };
 
-  const celebrate = (dot) => {
-    if (reduceMotion || !dot.animate) return;
+  const setAccent = (colorKey) => {
+    if (colorHexMap[colorKey]) {
+      // Assign CSS custom variable reference (e.g., var(--red))
+      root.style.setProperty("--accent", `var(--${colorKey})`);
+      root.style.setProperty("--accent-ink", inkFor(colorHexMap[colorKey]));
+    } else {
+      // Fallback if a raw hex code or unknown key is passed
+      root.style.setProperty("--accent", colorKey);
+      root.style.setProperty("--accent-ink", inkFor(colorKey));
+    }
+  };
 
-    dot.animate(
-      [{ scale: "1" }, { scale: ".86", offset: 0.25 }, { scale: "1.08", offset: 0.6 }, { scale: "1" }],
-      { duration: 480, easing: "ease-out" }
+  // ---- Center Image Switcher & Mapping ----
+  const centerImg = document.getElementById("wheelCenterImg");
+
+  const sectorImageMap = {
+    red: "siteAssets/patches.png",
+    orange: "siteAssets/trevor.png",
+    yellow: "siteAssets/marshmallow.png",
+    green: "siteAssets/goobus.png",
+    blue: "siteAssets/steven.png",
+    purple: "siteAssets/serotonincat.png",
+  };
+
+  const updateCenterImage = (imageSrc, altText) => {
+    if (!centerImg || !imageSrc) return;
+
+    centerImg.style.opacity = "0";
+    centerImg.style.transform = "scale(0.88)";
+
+    setTimeout(() => {
+      centerImg.src = imageSrc;
+      centerImg.alt = altText ? `${altText} preview visual` : "Selected accent preview";
+      centerImg.style.opacity = "1";
+      centerImg.style.transform = "scale(1)";
+    }, 180);
+  };
+
+  // ---- Wheel Rotation Controls ----
+  const wheelSvg = document.querySelector(".wheel__svg");
+  const wheelRing = document.querySelector(".wheel__ring");
+
+  if (wheelSvg && wheelRing) {
+    // Pause rotation when entering any sector path
+    wheelSvg.addEventListener("mouseover", (e) => {
+      if (e.target.classList.contains("wheel__sector")) {
+        wheelRing.style.animationPlayState = "paused";
+      }
+    });
+
+    // Resume rotation when leaving all sector paths (moving into donut hole or outside wheel)
+    wheelSvg.addEventListener("mouseout", (e) => {
+      if (!e.relatedTarget || !e.relatedTarget.classList.contains("wheel__sector")) {
+        wheelRing.style.animationPlayState = "running";
+      }
+    });
+  }
+
+  // ---- Frame 51 Donut Wheel Sector Interactivity ----
+  const celebrate = (sector) => {
+    if (reduceMotion || !sector || !sector.animate) return;
+
+    sector.animate(
+      [
+        { transform: "scale(1)" },
+        { transform: "scale(1.12)" },
+        { transform: "scale(1)" }
+      ],
+      { duration: 320, easing: "cubic-bezier(0.9, 0.3, 0.9, 1)" }
     );
-
-    const ripple = document.createElement("span");
-    ripple.className = "wheel__ripple";
-    ripple.setAttribute("aria-hidden", "true");
-    dot.appendChild(ripple);
-    ripple
-      .animate(
-        [{ transform: "scale(1)", opacity: 0.8 }, { transform: "scale(1.9)", opacity: 0 }],
-        { duration: 650, easing: "ease-out" }
-      )
-      .onfinish = () => ripple.remove();
 
     document.querySelectorAll(".btn:not(.btn--dark)").forEach((btn, i) => {
       btn.animate([{ scale: "1" }, { scale: "1.08" }, { scale: "1" }], {
@@ -79,15 +136,164 @@
     });
   };
 
-  const dots = [...document.querySelectorAll(".wheel__dot")];
-  dots.forEach((dot) => {
-    dot.addEventListener("click", () => {
-      if (dot.getAttribute("aria-pressed") === "true") return;
-      dots.forEach((d) => d.setAttribute("aria-pressed", String(d === dot)));
-      setAccent(dot.dataset.color);
-      celebrate(dot);
+// ---- Tagline Verb Mapping ----
+  const taglineVerbMap = {
+    yellow: "listen to",
+    green: "meet",
+    blue: "celebrate",
+    purple: "understand",
+    red: "respect",
+    orange: "appreciate"
+  };
+
+  const heroUnderline = document.querySelector(".hero u");
+  const sectors = document.querySelectorAll(".wheel__sector");
+  const bgPatternContainer = document.querySelector(".bg-pattern");
+
+  // Automatically generate strip elements if missing from HTML
+  if (bgPatternContainer && bgPatternContainer.children.length === 0) {
+    const fragment = document.createDocumentFragment();
+    for (let i = 0; i < 10; i++) {
+      const strip = document.createElement("div");
+      strip.className = "bg-pattern__strip";
+      strip.style.setProperty("--i", i);
+      fragment.appendChild(strip);
+    }
+    bgPatternContainer.appendChild(fragment);
+  }
+
+  sectors.forEach((sector) => {
+    const handleSelect = () => {
+      if (sector.getAttribute("aria-pressed") === "true") return;
+
+      sectors.forEach((s) => s.setAttribute("aria-pressed", "false"));
+      sector.setAttribute("aria-pressed", "true");
+
+      // Bring selected sector to top of SVG layer stack
+      if (sector.parentNode) {
+        sector.parentNode.appendChild(sector);
+      }
+
+      const color = sector.dataset.color;
+      const imageSrc = sector.dataset.image || sectorImageMap[color];
+      const label = sector.getAttribute("aria-label");
+
+      // Update hero tagline verb based on selected sector
+      if (color && taglineVerbMap[color] && heroUnderline) {
+        heroUnderline.textContent = taglineVerbMap[color];
+      }
+
+      // Update background pattern with staggered exit and entrance
+      if (color) {
+        setAccent(color);
+
+        if (bgPatternContainer && !reduceMotion) {
+          // 1. Clear existing pattern (top to bottom)
+          bgPatternContainer.classList.remove("is-entering");
+          bgPatternContainer.classList.add("is-exiting");
+
+          const exitDuration = 10 * 32 + 250; // 570ms total exit
+          const pauseDelay = 80;               // Brief pause before entrance
+
+          setTimeout(() => {
+            // 2. Switch dataset pattern while clear
+            document.body.dataset.pattern = color;
+            bgPatternContainer.classList.remove("is-exiting");
+
+            // Force reflow for animation reset
+            void bgPatternContainer.offsetWidth;
+
+            // 3. Reveal new pattern (top to bottom)
+            bgPatternContainer.classList.add("is-entering");
+
+            const enterDuration = 10 * 32 + 280;
+            setTimeout(() => {
+              bgPatternContainer.classList.remove("is-entering");
+            }, enterDuration);
+          }, exitDuration + pauseDelay);
+        } else {
+          document.body.dataset.pattern = color;
+        }
+      }
+
+      if (imageSrc) updateCenterImage(imageSrc, label);
+      celebrate(sector);
+      triggerRipple(sector);
+
+      if (wheelRing) {
+        wheelRing.style.animationPlayState = "running";
+      }
+    };
+
+    sector.addEventListener("click", handleSelect);
+    sector.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        handleSelect();
+      }
     });
   });
+
+  // ---- Slowed Sector-Specific Ripple Burst ----
+  // Helper to extract ONLY the outer arc portion from a sector's 'd' path attribute
+  const getArcOnlyPath = (sector) => {
+    const d = sector.getAttribute("d");
+    if (!d) return null;
+
+    // Matches the start coordinate right before the Arc command (A) and the Arc command itself
+    const match = d.match(/(?:[ML]\s*([\d.-]+)[,\s]+([\d.-]+))\s*(A[\d\.\-\s,]+?)(?=[ZzLmM]|$)/i);
+    if (match) {
+      return `M ${match[1]} ${match[2]} ${match[3]}`;
+    }
+
+    return d; // Fallback to full path if pattern isn't recognized
+  };
+
+  // ---- Slowed Arc-Only Ripple Burst ----
+  const triggerRipple = (sector) => {
+    if (reduceMotion || !sector) return;
+
+    const svg = sector.closest("svg");
+    if (!svg) return;
+
+    const arcD = getArcOnlyPath(sector);
+    if (!arcD) return;
+
+    const color = sector.getAttribute("fill") || sector.dataset.color || "var(--accent)";
+
+    // Group container for ripple elements
+    const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    group.setAttribute("pointer-events", "none");
+
+    // Selected color arc
+    const colorRipple = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    colorRipple.setAttribute("d", arcD);
+    colorRipple.setAttribute("fill", "none");
+    colorRipple.setAttribute("stroke", color);
+    colorRipple.setAttribute("stroke-linecap", "round");
+    colorRipple.setAttribute("class", "wheel__ripple-sector");
+
+    group.appendChild(colorRipple);
+    svg.appendChild(group);
+
+    // Slowed-down animation parameters (1.4 seconds)
+    const duration = 1400;
+    const easing = "cubic-bezier(0.12, 0.8, 0.25, 1)";
+
+    if (colorRipple.animate) {
+
+      colorRipple.animate(
+        [
+          //{ transform: "scale(1)", strokeWidth: "10px", opacity: "1" },
+          { transform: "scale(1.3)", strokeWidth: "2px", opacity: "0" }
+        ],
+        { duration, easing, fill: "forwards" }
+      );
+    }
+
+    // Clean up DOM element after animation ends
+    setTimeout(() => group.remove(), duration + 100);
+  };
 
   // ---- Anatomy Hotspots Interactivity ----
   const hotspotData = {
