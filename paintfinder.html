@@ -12,21 +12,18 @@
 </head>
 <body class="page-case-study">
   <div class="page">
+    <nav class="nav" aria-label="Primary">
+      <a class="logo" href="index.html" aria-label="Kiera Szuba, home">
+        <span class="logo__mark" aria-hidden="true"><img src="assets/siteAssets/logoV1.svg" alt="Kiera Szuba Logo"></span>
+      </a>
+      <div class="nav__buttons">
+        <a class="btn" href="index.html#works">Works</a>
+        <a class="btn" href="index.html#about">About Me</a>
+        <a class="btn btn--dark" href="index.html#contact">Say Hi!</a>
+      </div>
+    </nav>
     <main class="main">
-
       <header class="header" id="top">
-        <nav class="nav" aria-label="Primary">
-          <a class="logo" href="index.html" aria-label="Kiera Szuba home page">
-            <span class="logo__mark" aria-hidden="true"></span>
-            <span class="logo__name">Kiera Szuba</span>
-          </a>
-          <div class="nav__buttons">
-            <a class="btn" href="index.html#works">Works</a>
-            <a class="btn" href="index.html#about">About Me</a>
-            <a class="btn btn--dark" href="#contact">Say Hi!</a>
-          </div>
-        </nav>
-
         <div class="cs-hero">
           <h1 class="cs-title">Lowe’s PaintFinder</h1>
           <p class="cs-subtitle">A paint visualization kiosk that allows Lowe’s shoppers to plan paint projects in minutes.</p>
@@ -125,16 +122,24 @@
       </div>
     </main>
 
-    <footer class="footer" id="contact">
+<footer class="footer" id="contact">
       <div class="footer__content">
         <div class="footer__tagline">
           <p class="footer__kicker">Like what you’re seeing?</p>
-          <p class="footer__title">Let’s make some more.</p>
+          <h2 class="footer__title">Let’s make <u>some more</u>.</h2>
         </div>
         <div class="footer__nav">
+          <a class="btn btn--dark" href="#" data-link="email">Email me!</a>
           <a class="btn" href="#" data-link="resume">Resume</a>
           <a class="btn" href="#" data-link="linkedin">LinkedIn</a>
-          <a class="btn" href="#" data-link="email">Email</a>
+        </div>
+        <hr>
+        <div class="footer__meta">
+          <div class="footer__brand">
+            <img src="assets/siteAssets/logoV1.svg" alt="Kiera Szuba Logo">
+            <span class="footer__copyright">© 2026 Kiera Szuba</span>
+          </div>
+          <button class="back-to-top" id="backToTopBtn" type="button">Back to top ↑</button>
         </div>
       </div>
     </footer>
