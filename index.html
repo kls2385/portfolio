@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 
-<body data-pattern="yellow">
+<body data-pattern="yellow" class="is-intro is-intro-text-hidden is-intro-rest-hidden is-intro-wheel-centered">
   <div class="bg-pattern" aria-hidden="true">
     <div class="bg-pattern__strip" style="--i: 0"></div>
     <div class="bg-pattern__strip" style="--i: 1"></div>
@@ -39,7 +39,6 @@
     </nav>
     <main class="main">
 
-
       <header class="header" id="top">
         <div class="intro">
           <div class="intro__text">
@@ -54,26 +53,17 @@
               <svg class="wheel__svg" viewBox="0 0 500 500" aria-label="Interactive color wheel">
                 <defs>
                   <filter id="inner-shadow">
-                    <!-- 1. Create the inner shadow shape -->
                     <feMorphology operator="erode" radius="3" in="SourceAlpha" result="eroded" />
                     <feOffset dx="3" dy="3" in="eroded" result="offsetEroded" />
                     <feComposite operator="out" in="SourceAlpha" in2="offsetEroded" result="edge" />
-
-                    <!-- 2. Fill the inner shadow edge with solid white -->
                     <feFlood flood-color="#ffffff" result="white" />
                     <feComposite operator="in" in="white" in2="edge" result="whiteEdge" />
-
-                    <!-- 3. TRIM STROKE: Erode SourceAlpha by half the stroke width (2px-3px) -->
-                    <!-- This creates a boundary mask strictly inside the black stroke -->
                     <feMorphology operator="erode" radius="3" in="SourceAlpha" result="innerBounds" />
                     <feComposite operator="in" in="whiteEdge" in2="innerBounds" result="cleanWhiteEdge" />
-
-                    <!-- 4. Composite the trimmed shadow over the sector graphic -->
                     <feComposite operator="over" in="cleanWhiteEdge" in2="SourceGraphic" />
                   </filter>
                 </defs>
 
-                <!-- Sector paths carry both fill & stroke directly. NO separate overlay paths exist. -->
                 <path class="wheel__sector" fill="var(--red)" data-color="red"
                   data-image="assets/siteAssets/patches.png" tabindex="0" role="button" aria-pressed="false"
                   aria-label="Red sector" alt="Patches, a red cat with a white belly and red-pronged antennae"
@@ -164,7 +154,7 @@
 
         <section class="about" id="about" aria-labelledby="about-title">
           <div class="about__photo">
-            <img src="assets/about-photo.jpg" alt="A monkey resting on a rock ledge at the zoo">
+            <img src="assets/about-photo.jpg" alt="Kiera Szuba, a UX/UI designer, smiling and looking at the camera" />
           </div>
           <div class="about__text">
             <div class="about__heading">
