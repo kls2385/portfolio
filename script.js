@@ -6,6 +6,122 @@
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+// ---- Intro: timeline matches the approved mockup video (ms from page load) ----
+  const INTRO = {
+    accent: 500,    // nav buttons and accent turn yellow
+    yellow: 600,    // top sector takes its colour; ring loses its grey filter
+    pattern: 600,   // yellow background pattern fades in
+    ripple: 600,    // yellow shockwave from the centre
+    sweep: 650,     // remaining sectors fill in one after another
+    sweepStep: 50,
+    glide: 900,     // wheel glides right and hero text fades in
+    settle: 1750,   // intro state ends; wheel starts turning
+    rest: 1000,     // body and footer fade in immediately after color reveal!
+  };
+  const SWEEP_ORDER = ["green", "blue", "purple", "red", "orange"];
+
+  if (!reduceMotion) {
+    const body = document.body;
+    const wheel = document.querySelector(".wheel");
+    const sectorByColor = {};
+    document.querySelectorAll(".wheel__sector").forEach((s) => {
+      sectorByColor[s.dataset.color] = s;
+      s.setAttribute("aria-pressed", "false");
+    });
+
+    body.classList.add("is-intro", "is-intro-text-hidden", "is-intro-rest-hidden", "is-intro-wheel-centered");
+
+    // Calculate exact pixel offset to align wheel's centre with the viewport centre
+    const centerWheel = () => {
+      if (!wheel || window.innerWidth <= 1100) return;
+      wheel.style.removeProperty("--intro-center-offset");
+      const rect = wheel.getBoundingClientRect();
+      const offsetX = window.innerWidth / 2 - (rect.left + rect.width / 2);
+      wheel.style.setProperty("--intro-center-offset", `${offsetX}px`);
+    };
+    centerWheel();
+    window.addEventListener("resize", centerWheel, { passive: true });
+
+    // Inline fill beats the grey intro fill in the stylesheet
+    const revealSector = (color) => {
+      const s = sectorByColor[color];
+      if (!s) return;
+      s.style.fill = s.getAttribute("fill");
+      s.style.opacity = "1";
+    };
+
+    const later = (ms, fn) => setTimeout(fn, ms);
+
+const startIntro = () => {
+      centerWheel();
+
+      later(INTRO.accent, () => body.classList.add("intro-accent"));
+
+      // 600ms: Marshmallow pounds down onto the color reveal
+      later(INTRO.yellow, () => {
+        body.classList.add("intro-color", "intro-pattern");
+        revealSector("yellow");
+        
+        const yellow = sectorByColor.yellow;
+        if (yellow) {
+          yellow.setAttribute("aria-pressed", "true");
+          if (yellow.parentNode) {
+            yellow.parentNode.appendChild(yellow);
+          }
+          celebrate(yellow);
+        }
+
+        // Trigger staggered top-to-bottom curtain wipe immediately upon impact
+        if (bgPatternContainer) {
+          bgPatternContainer.classList.remove("is-exiting", "is-entering");
+          void bgPatternContainer.offsetWidth; // Force reflow to reset animation
+          bgPatternContainer.classList.add("is-entering");
+          later(600, () => bgPatternContainer.classList.remove("is-entering"));
+        }
+      });
+
+      later(INTRO.ripple, () => {
+        if (!wheel) return;
+        const shockwave = document.createElement("div");
+        shockwave.className = "wheel__intro-ripple";
+        wheel.appendChild(shockwave);
+
+        requestAnimationFrame(() => {
+          shockwave.classList.add("is-active");
+        });
+
+        later(700, () => shockwave.remove());
+      });
+
+      // Sweep remaining sectors sequentially (650ms - 900ms)
+      SWEEP_ORDER.forEach((color, i) =>
+        later(INTRO.sweep + i * INTRO.sweepStep, () => revealSector(color))
+      );
+
+      // 900ms: Wheel glides right and hero text fades in
+      later(INTRO.glide, () => body.classList.remove("is-intro-wheel-centered", "is-intro-text-hidden"));
+
+      later(INTRO.settle, () => {
+        body.classList.remove("is-intro");
+        window.removeEventListener("resize", centerWheel);
+        Object.values(sectorByColor).forEach((s) => {
+          s.style.removeProperty("fill");
+          s.style.removeProperty("opacity");
+        });
+      });
+
+      later(INTRO.rest, () => body.classList.remove("is-intro-rest-hidden"));
+    };
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", startIntro);
+    } else {
+      startIntro();
+    }
+  } else {
+    document.body.classList.remove("is-intro", "is-intro-text-hidden", "is-intro-rest-hidden", "is-intro-wheel-centered");
+  }
+
   // ---- Smooth in-page navigation ----
   document.querySelectorAll('a[href^="#"]').forEach((link) => {
     const hash = link.getAttribute("href");
@@ -114,17 +230,21 @@
     });
   }
 
-  // ---- Frame 51 Donut Wheel Sector Interactivity ----
-  const celebrate = (sector) => {
+// ---- Sector Celebration Pop ----
+const celebrate = (sector) => {
     if (reduceMotion || !sector || !sector.animate) return;
+
+    const isPressed = sector.getAttribute("aria-pressed") === "true";
+    const baseScale = isPressed ? 1.08 : 1;
+    const peakScale = isPressed ? 1.16 : 1.12;
 
     sector.animate(
       [
-        { transform: "scale(1)" },
-        { transform: "scale(1.12)" },
-        { transform: "scale(1)" }
+        { transform: `scale(${baseScale})` },
+        { transform: `scale(${peakScale})` },
+        { transform: `scale(${baseScale})` }
       ],
-      { duration: 320, easing: "cubic-bezier(0.9, 0.3, 0.9, 1)" }
+      { duration: 320, easing: "cubic-bezier(0.34, 1.56, 0.64, 1)" } // Removed fill: "forwards"
     );
 
     document.querySelectorAll(".btn:not(.btn--dark)").forEach((btn, i) => {
@@ -139,14 +259,14 @@
 // ---- Tagline Verb Mapping ----
   const taglineVerbMap = {
     yellow: "listen to",
-    green: "meet",
-    blue: "celebrate",
+    green: "work with",
+    blue: "respect",
     purple: "understand",
-    red: "respect",
-    orange: "appreciate"
+    red: "appreciate",
+    orange: "celebrate"
   };
 
-  const heroUnderline = document.querySelector(".hero u");
+const heroUnderline = document.querySelector(".hero u");
   const sectors = document.querySelectorAll(".wheel__sector");
   const bgPatternContainer = document.querySelector(".bg-pattern");
 
@@ -162,11 +282,18 @@
     bgPatternContainer.appendChild(fragment);
   }
 
-  sectors.forEach((sector) => {
+sectors.forEach((sector) => {
     const handleSelect = () => {
       if (sector.getAttribute("aria-pressed") === "true") return;
 
-      sectors.forEach((s) => s.setAttribute("aria-pressed", "false"));
+      // Reset aria-pressed state AND clear lingering WAAPI animation overrides on all sectors
+      sectors.forEach((s) => {
+        s.setAttribute("aria-pressed", "false");
+        if (s.getAnimations) {
+          s.getAnimations().forEach((anim) => anim.cancel());
+        }
+      });
+
       sector.setAttribute("aria-pressed", "true");
 
       // Bring selected sector to top of SVG layer stack
@@ -174,13 +301,35 @@
         sector.parentNode.appendChild(sector);
       }
 
-      const color = sector.dataset.color;
+const color = sector.dataset.color;
       const imageSrc = sector.dataset.image || sectorImageMap[color];
       const label = sector.getAttribute("aria-label");
 
-      // Update hero tagline verb based on selected sector
+      // Animate text swap & underline redraw on color selection
       if (color && taglineVerbMap[color] && heroUnderline) {
-        heroUnderline.textContent = taglineVerbMap[color];
+        const newVerb = taglineVerbMap[color];
+
+        if (heroUnderline.textContent !== newVerb) {
+          heroUnderline.classList.remove("is-swapping-in");
+          heroUnderline.classList.add("is-swapping");
+
+          setTimeout(() => {
+            heroUnderline.textContent = newVerb;
+            setAccent(color);
+
+            heroUnderline.classList.remove("is-swapping");
+            void heroUnderline.offsetWidth; // Force reflow to re-trigger keyframes
+            heroUnderline.classList.add("is-swapping-in");
+
+            setTimeout(() => {
+              heroUnderline.classList.remove("is-swapping-in");
+            }, 450);
+          }, 150);
+        } else {
+          setAccent(color);
+        }
+      } else if (color) {
+        setAccent(color);
       }
 
       // Update background pattern with staggered exit and entrance
@@ -188,7 +337,7 @@
         setAccent(color);
 
         if (bgPatternContainer && !reduceMotion) {
-          // 1. Clear existing pattern (top to bottom)
+          // 1. Clear existing pattern from top to bottom
           bgPatternContainer.classList.remove("is-entering");
           bgPatternContainer.classList.add("is-exiting");
 
@@ -203,7 +352,7 @@
             // Force reflow for animation reset
             void bgPatternContainer.offsetWidth;
 
-            // 3. Reveal new pattern (top to bottom)
+            // 3. Reveal new pattern from top to bottom
             bgPatternContainer.classList.add("is-entering");
 
             const enterDuration = 10 * 32 + 280;
@@ -234,22 +383,18 @@
     });
   });
 
-  // ---- Slowed Sector-Specific Ripple Burst ----
-  // Helper to extract ONLY the outer arc portion from a sector's 'd' path attribute
+// Helper to extract a 100% valid standalone SVG Arc path command (M startX startY A ...)
   const getArcOnlyPath = (sector) => {
     const d = sector.getAttribute("d");
     if (!d) return null;
 
-    // Matches the start coordinate right before the Arc command (A) and the Arc command itself
-    const match = d.match(/(?:[ML]\s*([\d.-]+)[,\s]+([\d.-]+))\s*(A[\d\.\-\s,]+?)(?=[ZzLmM]|$)/i);
-    if (match) {
-      return `M ${match[1]} ${match[2]} ${match[3]}`;
-    }
-
-    return d; // Fallback to full path if pattern isn't recognized
+    // Matches 'M x y A rx ry x-axis-rotation large-arc-flag sweep-flag endX endY'
+    const match = d.match(/M\s*[\d.-]+[,\s]+[\d.-]+\s*A\s*[\d.\s,-]+/i);
+    return match ? match[0].trim() : d;
   };
 
-  // ---- Slowed Arc-Only Ripple Burst ----
+
+  // ---- Sector-Specific Arc Ripple Burst ----
   const triggerRipple = (sector) => {
     if (reduceMotion || !sector) return;
 
@@ -259,42 +404,38 @@
     const arcD = getArcOnlyPath(sector);
     if (!arcD) return;
 
-    const color = sector.getAttribute("fill") || sector.dataset.color || "var(--accent)";
+    // Fall back through fill attribute, dataset color, or default hex
+    let color = sector.getAttribute("fill");
+    if (!color || color.startsWith("var(")) {
+      color = window.getComputedStyle(sector).fill;
+    }
+    if (!color || color === "none") {
+      color = sector.dataset.color ? `var(--${sector.dataset.color})` : "#ffd900";
+    }
 
-    // Group container for ripple elements
     const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
     group.setAttribute("pointer-events", "none");
 
-    // Selected color arc
     const colorRipple = document.createElementNS("http://www.w3.org/2000/svg", "path");
     colorRipple.setAttribute("d", arcD);
     colorRipple.setAttribute("fill", "none");
     colorRipple.setAttribute("stroke", color);
+    colorRipple.setAttribute("stroke-width", "6");
     colorRipple.setAttribute("stroke-linecap", "round");
     colorRipple.setAttribute("class", "wheel__ripple-sector");
 
     group.appendChild(colorRipple);
     svg.appendChild(group);
 
-    // Slowed-down animation parameters (1.4 seconds)
-    const duration = 1400;
-    const easing = "cubic-bezier(0.12, 0.8, 0.25, 1)";
+    // Force double requestAnimationFrame so WebKit resolves layout before starting animation
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        colorRipple.classList.add("is-animating");
+      });
+    });
 
-    if (colorRipple.animate) {
-
-      colorRipple.animate(
-        [
-          //{ transform: "scale(1)", strokeWidth: "10px", opacity: "1" },
-          { transform: "scale(1.3)", strokeWidth: "2px", opacity: "0" }
-        ],
-        { duration, easing, fill: "forwards" }
-      );
-    }
-
-    // Clean up DOM element after animation ends
-    setTimeout(() => group.remove(), duration + 100);
+    setTimeout(() => group.remove(), 900);
   };
-
   // ---- Anatomy Hotspots Interactivity ----
   const hotspotData = {
     "1": {
